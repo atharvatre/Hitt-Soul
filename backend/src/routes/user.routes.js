@@ -6,6 +6,6 @@ import {
 
 const router = Router();
 
-router.post("/question", postUserQuestion);
-router.get("/location/:city", getUserLocation);
+router.post("/chat", postUserQuestion);
+// router.get("/location/:city", getUserLocation);
 export default router;
