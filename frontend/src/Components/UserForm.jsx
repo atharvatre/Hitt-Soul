@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import "./UserForm.css";
 const UserForm = () => {
   const [formData, setFormData] = useState({
     fullname: "",
@@ -9,7 +9,7 @@ const UserForm = () => {
     date: "",
     hours: "",
     minutes: "",
-    seconds: 30, // Hardcoded value
+    seconds: 30,
     gender: "",
     latitude: "",
     longitude: "",
@@ -19,7 +19,7 @@ const UserForm = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [userData, setUserData] = useState(null); // Variable to store user data
+  const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -30,7 +30,7 @@ const UserForm = () => {
   const fetchLocationDetails = async (city, state) => {
     try {
       setLoading(true);
-      const apiKey = import.meta.env.VITE_OPENCAGE_API_KEY; // Replace with your OpenCage API key
+      const apiKey = import.meta.env.VITE_OPENCAGE_API_KEY;
       const response = await fetch(
         `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
           city
@@ -38,7 +38,7 @@ const UserForm = () => {
       );
       const data = await response.json();
 
-      if (data.results.length > 0) {
+      if (data.results.length > 0 && response.status === 200) {
         const result = data.results[0];
         const timezone = result.annotations.timezone.offset_string;
         const { lat, lng } = result.geometry;
@@ -67,8 +67,8 @@ const UserForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.city || !formData.state) {
-      alert("Please provide the city and state.");
+    if (!formData.city || !formData.state || !formData.fullname || !formData.gender || !formData.hours || !formData.minutes) {
+      alert("Please fill in all required fields.");
       return;
     }
 
@@ -90,134 +90,155 @@ const UserForm = () => {
   };
 
   return (
-    <div style={{ padding: "20px", maxWidth: "500px", margin: "auto" }}>
-      <h2>Enter Your Birth Details</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Full Name:
-          <input
-            type="text"
-            name="fullname"
-            value={formData.fullname}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <br />
-        <label>
-          Year:
-          <input
-            type="number"
-            name="year"
-            value={formData.year}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <br />
-        <label>
-          Month (1-12):
-          <input
-            type="number"
-            name="month"
-            value={formData.month}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <br />
-        <label>
-          Date:
-          <input
-            type="number"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <br />
-        <label>
-          Hours (0-23):
-          <input
-            type="number"
-            name="hours"
-            value={formData.hours}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <br />
-        <label>
-          Minutes:
-          <input
-            type="number"
-            name="minutes"
-            value={formData.minutes}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <br />
-        <fieldset>
-          <legend>Gender:</legend>
-          <label>
-            <input
-              type="radio"
-              name="gender"
-              value="Male"
-              checked={formData.gender === "Male"}
-              onChange={handleChange}
-              required
-            />
-            Male
-          </label>
-          <br />
-          <label>
-            <input
-              type="radio"
-              name="gender"
-              value="Female"
-              checked={formData.gender === "Female"}
-              onChange={handleChange}
-              required
-            />
-            Female
-          </label>
-        </fieldset>
-        <br />
-        <label>
-          City:
-          <input
-            type="text"
-            name="city"
-            value={formData.city}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <br />
-        <label>
-          State:
-          <input
-            type="text"
-            name="state"
-            value={formData.state}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <br />
-        <button type="submit" disabled={loading}>
-          {loading ? "Fetching Location Details..." : "Submit"}
-        </button>
-      </form>
-      {userData && (
-        <div style={{ marginTop: "20px" }}>
-          <h3>User Data:</h3>
-          <pre>{JSON.stringify(userData, null, 2)}</pre>
-        </div>
-      )}
+    <div className="astro-container" >
+      <div className="form-wrapper">
+        <h2 className="form-title">✨ Birth Chart Details ✨</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label className="input-label">
+              Full Name
+              <input
+                type="text"
+                name="fullname"
+                value={formData.fullname}
+                onChange={handleChange}
+                required
+                placeholder="Enter your full name"
+                className="input-field"
+              />
+            </label>
+          </div>
+
+          <div className="grid-3">
+            <label className="input-label">
+              Year
+              <input
+                type="number"
+                name="year"
+                value={formData.year}
+                onChange={handleChange}
+                required
+                placeholder="1990"
+                className="input-field"
+              />
+            </label>
+            <label className="input-label">
+              Month
+              <input
+                type="number"
+                name="month"
+                value={formData.month}
+                onChange={handleChange}
+                required
+                placeholder="01-12"
+                className="input-field"
+              />
+            </label>
+            <label className="input-label">
+              Date
+              <input
+                type="number"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
+                required
+                placeholder="01-31"
+                className="input-field"
+              />
+            </label>
+          </div>
+
+          <div className="grid-2">
+            <label className="input-label">
+              Hours
+              <input
+                type="number"
+                name="hours"
+                value={formData.hours}
+                onChange={handleChange}
+                required
+                placeholder="0-23"
+                className="input-field"
+              />
+            </label>
+            <label className="input-label">
+              Minutes
+              <input
+                type="number"
+                name="minutes"
+                value={formData.minutes}
+                onChange={handleChange}
+                required
+                placeholder="0-59"
+                className="input-field"
+              />
+            </label>
+          </div>
+
+          <fieldset className="gender-fieldset" >
+            <legend className="gender-legend">Gender</legend>
+            <div  className="radio-group">
+              <label className="radio-label">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="Male"
+                  checked={formData.gender === "Male"}
+                  onChange={handleChange}
+                  required
+                />
+                Male
+              </label>
+              <label className="radio-label">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="Female"
+                  checked={formData.gender === "Female"}
+                  onChange={handleChange}
+                  required
+                />
+                Female
+              </label>
+            </div>
+          </fieldset>
+
+          <div className="grid-2">
+            <label className="input-label">
+              City
+              <input
+                type="text"
+                name="city"
+                value={formData.city}
+                onChange={handleChange}
+                placeholder="Enter your city of Birth"
+                required
+                className="input-field"
+              />
+            </label>
+            <label className="input-label">
+              State
+              <input
+                type="text"
+                name="state"
+                value={formData.state}
+                onChange={handleChange}
+                placeholder="Enter your state"
+                required
+                className="input-field"
+              />
+            </label>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="submit-button"
+          >
+            {loading ? "🌟 Consulting the Stars..." : "🔮 Reveal Your Cosmic Path"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
