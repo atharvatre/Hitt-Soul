@@ -66,7 +66,7 @@ const UserForm = () => {
 
   const fetchInitialData = async (data) => {
     try {
-      // const userFormData = JSON.parse(localStorage.getItem("userFormData"));
+      localStorage.setItem("formdata", JSON.stringify(data));
       const requestBody = {
         input_value: `Name: ${data.fullname}
       Gender: ${data.gender}
@@ -114,7 +114,7 @@ const UserForm = () => {
           "Content-Type": "application/json",
         },
       });
-
+      localStorage.setItem("formdata", JSON.stringify(data));
       JSON.parse(localStorage.setItem("kundli", JSON.stringify(response?.data)));
     } catch (error) {
       console.error("Error fetching data:", error);

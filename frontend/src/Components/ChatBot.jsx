@@ -9,12 +9,14 @@ const ChatBot = () => {
   const [initialData, setInitialData] = useState("");
   const [userMessage, setUserMessage] = useState("");
   const [chatHistory, setChatHistory] = useState([]);
+  const [userData, setUserData] = useState({});
 
   useEffect(() => {
     setInitialData(
       JSON.parse(localStorage.getItem("kundli")).outputs[0]?.outputs[0]?.results
         ?.message?.data?.text
     );
+    setUserData(JSON.parse(localStorage.getItem("formdata")));
     setLoading(false);
   }, [localStorage.getItem("kundli")]);
 
@@ -29,7 +31,14 @@ const ChatBot = () => {
     setUserMessage("");
     try {
       const requestBody = {
-        input_value: userMessage,
+        input_value: `userMessage Gender: ${userData?.gender}
+      Date of Birth: ${userData?.date}/${userData?.month}/${userData?.year}
+      Time: ${userData?.hours}:${userData?.minutes}:${userData?.seconds}
+      Location: ${userData?.city}, ${userData?.state}
+      Latitude: ${userData?.latitude}
+      Longitude: ${userData?.longitude}
+      Timezone: ${userData?.timezone} 
+       And provide short and precise answer for the following question: ${userMessage}`,
         output_type: "chat",
         input_type: "chat",
         tweaks: {
@@ -81,8 +90,8 @@ const ChatBot = () => {
             {chatHistory.length === 0 && (
               <div className="text-center">
                 <p>
-                  Welcome to our chatbot! Ask me anything about your kundli
-                  and I'll provide you with insightful answers.
+                  Welcome to our chatbot! Ask me anything about your kundli and
+                  I'll provide you with insightful answers.
                 </p>
               </div>
             )}
