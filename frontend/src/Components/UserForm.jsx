@@ -157,7 +157,7 @@ const UserForm = () => {
   return (
     <div className="astro-container FlexCenter">
       <div className="form-wrapper">
-        <h2 className="form-title">✨ Birth Chart Details ✨</h2>
+        <h2 className="form-title">✨ SoulBuddy - AI-Powered Spiritual Guide ✨</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="input-label">
