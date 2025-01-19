@@ -8,13 +8,10 @@ dotenv.config({
 
 const app = express();
 app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN,
-    credentials: true,
-  })
+  cors()
 ); //for cors issue tackling . VImp
-app.use(express.json({ limit: "16kb" })); //amount of json to be handled by the server
-app.use(express.urlencoded({ extended: true, limit: "16kb" })); //amount of urlencoded data to be handled by the server
+app.use(express()); //amount of json to be handled by the server
+ //amount of urlencoded data to be handled by the server
 app.use(express.static("public")); //for serving static files
 app.use(cookieParser()); //for parsing cookies
 
@@ -24,10 +21,12 @@ app.use(cookieParser()); //for parsing cookies
 // //routes declaration
 // app.use("/api/v1/users", userRouter);
 
+app.use(express.json()); 
+
 app.post("/api/chat", async (req, res) => {
   try {
     const body = req.body;
-    console.log("Received request body:", body);
+    console.log("Received request body:", req.body);
     const response = await fetch(process.env.LANGFLOW_API_URL, {
       method: "POST",
       headers: {
@@ -43,5 +42,5 @@ app.post("/api/chat", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-export default app;
 
+export default app;

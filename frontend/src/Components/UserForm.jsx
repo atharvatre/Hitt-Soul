@@ -19,7 +19,7 @@ const UserForm = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -85,6 +85,7 @@ const UserForm = () => {
       setFormData(updatedFormData);
       setUserData(updatedFormData);
       console.log("Final User Data===>", updatedFormData);
+      localStorage.setItem("userFormData", JSON.stringify(updatedFormData));
       navigate("/chatbot");
     }
   };
