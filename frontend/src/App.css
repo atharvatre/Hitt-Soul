@@ -1,0 +1,36 @@
+.App{
+    background-color: #fff;
+}
+
+.FlexAround {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.FlexBetween {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.FlexCenter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.w-45 {
+    width: 45%;
+}
+
+.text-right{
+    text-align: right;
+}
+
+.text-left{
+    text-align: left;
+    padding: 2px;
+    border-radius: 10px;
+}

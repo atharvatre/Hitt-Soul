@@ -1,6 +1,8 @@
-import  { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./UserForm.css";
+const apiEndpoint = import.meta.env.VITE_API_ENDPOINT;
 const UserForm = () => {
   const [formData, setFormData] = useState({
     fullname: "",
@@ -19,7 +21,6 @@ const UserForm = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [userData, setUserData] = useState();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -28,8 +29,8 @@ const UserForm = () => {
   };
 
   const fetchLocationDetails = async (city, state) => {
+    setLoading(true);
     try {
-      setLoading(true);
       const apiKey = import.meta.env.VITE_OPENCAGE_API_KEY;
       const response = await fetch(
         `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
@@ -47,7 +48,7 @@ const UserForm = () => {
           ...prevData,
           latitude: lat.toString(),
           longitude: lng.toString(),
-          timezone: timezone.replace('+', '')
+          timezone: timezone.replace("+", ""),
         }));
 
         return { lat, lng, timezone };
@@ -58,40 +59,103 @@ const UserForm = () => {
     } catch (error) {
       console.error("Error fetching location details:", error);
       alert("Failed to fetch location details. Please try again.");
-      return null;
-    } finally {
       setLoading(false);
+      return null;
+    }
+  };
+
+  const fetchInitialData = async (data) => {
+    try {
+      // const userFormData = JSON.parse(localStorage.getItem("userFormData"));
+      const requestBody = {
+        input_value: `Name: ${data.fullname}
+      Gender: ${data.gender}
+      Date of Birth: ${data.date}/${data.month}/${data.year}
+      Time: ${data.hours}:${data.minutes}:${data.seconds}
+      Location: ${data.city}, ${data.state}
+      Latitude: ${data.latitude}
+      Longitude: ${data.longitude}
+      Timezone: ${data.timezone} 
+      
+      Provide a comprehensive analysis including:
+        1. Kundali Analysis & Horoscope Reading:
+           - Detailed birth chart interpretation
+           - Current planetary positions
+           - Upcoming astrological predictions
+        
+        2. Personal Recommendations:
+           - Suggested Puja rituals for harmony
+           - Beneficial gemstones based on birth chart
+           - Essential Dos and Don'ts for spiritual growth
+        
+        3. Wellness Guidelines:
+           - Personalized meditation techniques
+           - Recommended workout routines
+           - Suitable sleep music and relaxation practices`,
+        output_type: "chat",
+        input_type: "chat",
+        tweaks: {
+          "ChatInput-ptY9L": {},
+          "TextInput-4eLMO": {},
+          "Prompt-s92xM": {},
+          "OpenAIModel-MQPYL": {},
+          "ChatOutput-eYBF6": {},
+          "ParseData-okg1x": {},
+          "AstraDB-4WWLe": {},
+          "OpenAIEmbeddings-R0WtN": {},
+          "SplitText-v2FBv": {},
+          "File-PHABe": {},
+          "File-QRe0u": {},
+          "File-nm52U": {},
+        },
+      };
+      const response = await axios.post(apiEndpoint, requestBody, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      JSON.parse(localStorage.setItem("kundli", JSON.stringify(response?.data)));
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!formData.city || !formData.state || !formData.fullname || !formData.gender || !formData.hours || !formData.minutes) {
+    setLoading(true);
+    if (
+      !formData.city ||
+      !formData.state ||
+      !formData.fullname ||
+      !formData.gender ||
+      !formData.hours ||
+      !formData.minutes
+    ) {
       alert("Please fill in all required fields.");
       return;
     }
+    const locationDetails = await fetchLocationDetails(
+      formData.city,
+      formData.state
+    );
 
-    const locationDetails = await fetchLocationDetails(formData.city, formData.state);
-    
     if (locationDetails) {
       const updatedFormData = {
         ...formData,
         latitude: locationDetails.lat.toString(),
         longitude: locationDetails.lng.toString(),
-        timezone: locationDetails.timezone.replace('+', '')
+        timezone: locationDetails.timezone.replace("+", ""),
       };
-      
-      setFormData(updatedFormData);
-      setUserData(updatedFormData);
-      console.log("Final User Data===>", updatedFormData);
-      localStorage.setItem("userFormData", JSON.stringify(updatedFormData));
+
+      await fetchInitialData(updatedFormData);
+      setLoading(false);
       navigate("/chatbot");
     }
   };
 
   return (
-    <div className="astro-container" >
+    <div className="astro-container FlexCenter">
       <div className="form-wrapper">
         <h2 className="form-title">✨ Birth Chart Details ✨</h2>
         <form onSubmit={handleSubmit}>
@@ -176,9 +240,9 @@ const UserForm = () => {
             </label>
           </div>
 
-          <fieldset className="gender-fieldset" >
+          <fieldset className="gender-fieldset">
             <legend className="gender-legend">Gender</legend>
-            <div  className="radio-group">
+            <div className="radio-group">
               <label className="radio-label">
                 <input
                   type="radio"
@@ -231,12 +295,10 @@ const UserForm = () => {
             </label>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="submit-button"
-          >
-            {loading ? "🌟 Consulting the Stars..." : "🔮 Reveal Your Cosmic Path"}
+          <button type="submit" disabled={loading} className="submit-button">
+            {loading
+              ? "🌟 Consulting the Stars..."
+              : "🔮 Reveal Your Cosmic Path"}
           </button>
         </form>
       </div>
